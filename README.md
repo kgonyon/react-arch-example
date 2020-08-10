@@ -1,44 +1,47 @@
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+# React Architecture
+This is a small repository put together to show a possible react based project architecture.
 
-## Available Scripts
+The main point is to show how we can separate state from the UI components while
+making data more available to all UI components. This drastically reduces the complexity of UI components
+keeping them focused on how to display data instead of passing data to each other.
 
-In the project directory, you can run:
+The goal is to leverage the advantages of declarative programming. We want to describe what the UI should
+look like based on the state passed in and have state concerns dealt with outside the components.
 
-### `yarn start`
+# Main Components
+These are the main components that make up this codes architecture. Keep in mind
+these terms are some what arbitrary. Some people call them by different names, what
+is important is the purpose and role of each component.
 
-Runs the app in the development mode.<br />
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+## Repository
+The main role of the repository is to expose an API to the rest of the application. 
+This API can be one to one to API from a server or database, but this doesn't 
+always have to be the case. The main question you want to ask is what API do I want 
+to expose to the rest of the application. This is where you have a chance to design 
+how data is exposed to / consumed by the rest of the application. 
 
-The page will reload if you make edits.<br />
-You will also see any lint errors in the console.
+For example if this application uses the data from a server
+in a simplified way, here we can remove complexity of the data. Ex: The server has
+Individuals and Admins. An Admin is always an Individual. If the application doesn't
+need to be concerned with the inheritance you can merge the data from both types and 
+return it all as an Admin type. This will abstract away the Individual -> Admin hierarchy making the data easier to process for the UI.
 
-### `yarn test`
+Another example would be if we have data from two different servers. We can merge
+data from multiple sources here into a single type for the rest of the application.
 
-Launches the test runner in the interactive watch mode.<br />
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+Another important aspect of repositories is they are usually responsible for one 
+part of an API. For example if we have an API for clients that is composed of
+their information, invoices and billing then we could create separate repositories 
+for Clients, Invoices, and Billing. You can also create a Root Repository that holds
+all the separate repositories. `clientsApi.invoicesRepo.getInvoices(clientId)`. 
 
-### `yarn build`
+## Store
+The main role of the store is to hold all the global data for the application and
+expose actions that can be run to modify the data.
 
-Builds the app for production to the `build` folder.<br />
-It correctly bundles React in production mode and optimizes the build for the best performance.
+In this repository Mobx is used for the store layer. This could also be redux.
+You usually want to have a root store that exposes all the sub stores. Your store
+will expose functions that we will call `actions` that can modify the data in the
+store. These actions should call any repository functions needed. 
 
-The build is minified and the filenames include the hashes.<br />
-Your app is ready to be deployed!
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
-
-### `yarn eject`
-
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
-
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
-
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
